@@ -17,15 +17,23 @@ class MemberController extends Controller
     {
         $wilayahOptions = [
             'BDG' => 'Bandung',
-            'JKT' => 'Jakarta', 
-            'SBY' => 'Surabaya',
-            'MDN' => 'Medan',
-            'DPK' => 'Depok',
-            'TGR' => 'Tangerang',
-            'PLB' => 'Palembang',
-            'SMG' => 'Semarang',
-            'MKS' => 'Makassar',
-            'BJM' => 'Banjarmasin'
+            'KBG' => 'Kabupaten Bandung',
+            'KBB' => 'Kabupaten Bandung Barat',
+            'KBT' => 'Kabupaten Bandung Timur',
+            'CMH' => 'Cimahi',
+            'GRT' => 'Garut',
+            'KGU' => 'Kabupaten Garut Utara',
+            'KGS' => 'Kabupaten Garut Selatan',
+            'SMD' => 'Sumedang',
+            'TSM' => 'Tasikmalaya',
+            'SMI' => 'Kota Sukabumi',
+            'KSI' => 'Kabupaten Sukabumi',
+            'KSU' => 'Kabupaten Sukabumi Utara',
+            'CJR' => 'Cianjur',
+            'BGR' => 'Bogor',
+            'KBR' => 'Kabupaten Bogor',
+            'YMG' => 'Yamughni',
+            'PMB' => 'Pembina'
         ];
 
         return response()->json([
@@ -51,6 +59,16 @@ class MemberController extends Controller
         }
 
         $wilayah = strtoupper($request->wilayah);
+        
+        // Validate that wilayah exists in our options
+        $validWilayah = ['BDG', 'KBG', 'KBB', 'KBT', 'CMH', 'GRT', 'KGU', 'KGS', 'SMD', 'TSM', 'SMI', 'KSI', 'KSU', 'CJR', 'BGR', 'KBR', 'YMG', 'PMB'];
+        
+        if (!in_array($wilayah, $validWilayah)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid wilayah code'
+            ], 422);
+        }
         
         try {
             // Get or create wilayah counter
@@ -92,7 +110,7 @@ class MemberController extends Controller
             'nikKtp' => 'required|string|size:16|unique:members,nik_ktp',
             'namaLengkap' => 'required|string|max:255',
             'alamatLengkap' => 'required|string',
-            'wilayah' => 'required|string|size:3',
+            'wilayah' => 'required|string|size:3|in:BDG,KBG,KBB,KBT,CMH,GRT,KGU,KGS,SMD,TSM,SMI,KSI,KSU,CJR,BGR,KBR,YMG,PMB',
             'nomorWhatsapp' => 'required|string|max:15'
         ]);
 
@@ -167,6 +185,15 @@ class MemberController extends Controller
                 $query->where('status', $request->status);
             }
             
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('nama_lengkap', 'like', '%' . $search . '%')
+                      ->orWhere('member_id', 'like', '%' . $search . '%')
+                      ->orWhere('nik_ktp', 'like', '%' . $search . '%');
+                });
+            }
+            
             $members = $query->orderBy('registration_date', 'desc')->paginate(15);
             
             return response()->json([
@@ -196,6 +223,9 @@ class MemberController extends Controller
                 'members_by_wilayah' => Member::select('wilayah', DB::raw('count(*) as total'))
                     ->groupBy('wilayah')
                     ->get()
+                    ->pluck('total', 'wilayah')
+                    ->toArray(),
+                'recent_registrations' => Member::where('registration_date', '>=', now()->subDays(30))->count()
             ];
             
             return response()->json([

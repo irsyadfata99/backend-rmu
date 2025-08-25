@@ -9,15 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-public function up()
-{
-    Schema::create('wilayah_counters', function (Blueprint $table) {
-        $table->id();
-        $table->string('wilayah_code', 3)->unique();
-        $table->integer('current_number')->default(0);
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('wilayah_counters', function (Blueprint $table) {
+            $table->id();
+            $table->string('wilayah_code', 3)->unique();
+            $table->unsignedInteger('current_number')->default(0);
+            $table->timestamps();
+            
+            $table->index('wilayah_code');
+        });
+    }
 
     /**
      * Reverse the migrations.

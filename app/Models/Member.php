@@ -31,15 +31,23 @@ class Member extends Model
     {
         $wilayahOptions = [
             'BDG' => 'Bandung',
-            'JKT' => 'Jakarta', 
-            'SBY' => 'Surabaya',
-            'MDN' => 'Medan',
-            'DPK' => 'Depok',
-            'TGR' => 'Tangerang',
-            'PLB' => 'Palembang',
-            'SMG' => 'Semarang',
-            'MKS' => 'Makassar',
-            'BJM' => 'Banjarmasin'
+            'KBG' => 'Kabupaten Bandung',
+            'KBB' => 'Kabupaten Bandung Barat',
+            'KBT' => 'Kabupaten Bandung Timur',
+            'CMH' => 'Cimahi',
+            'GRT' => 'Garut',
+            'KGU' => 'Kabupaten Garut Utara',
+            'KGS' => 'Kabupaten Garut Selatan',
+            'SMD' => 'Sumedang',
+            'TSM' => 'Tasikmalaya',
+            'SMI' => 'Kota Sukabumi',
+            'KSI' => 'Kabupaten Sukabumi',
+            'KSU' => 'Kabupaten Sukabumi Utara',
+            'CJR' => 'Cianjur',
+            'BGR' => 'Bogor',
+            'KBR' => 'Kabupaten Bogor',
+            'YMG' => 'Yamughni',
+            'PMB' => 'Pembina'
         ];
         
         return $wilayahOptions[$this->wilayah] ?? $this->wilayah;
@@ -69,6 +77,37 @@ class Member extends Model
     protected $hidden = [
         // Hide sensitive data if needed
     ];
+
+    // Static method to get wilayah options (useful for validation and other purposes)
+    public static function getWilayahOptions()
+    {
+        return [
+            'BDG' => 'Bandung',
+            'KBG' => 'Kabupaten Bandung',
+            'KBB' => 'Kabupaten Bandung Barat',
+            'KBT' => 'Kabupaten Bandung Timur',
+            'CMH' => 'Cimahi',
+            'GRT' => 'Garut',
+            'KGU' => 'Kabupaten Garut Utara',
+            'KGS' => 'Kabupaten Garut Selatan',
+            'SMD' => 'Sumedang',
+            'TSM' => 'Tasikmalaya',
+            'SMI' => 'Kota Sukabumi',
+            'KSI' => 'Kabupaten Sukabumi',
+            'KSU' => 'Kabupaten Sukabumi Utara',
+            'CJR' => 'Cianjur',
+            'BGR' => 'Bogor',
+            'KBR' => 'Kabupaten Bogor',
+            'YMG' => 'Yamughni',
+            'PMB' => 'Pembina'
+        ];
+    }
+
+    // Static method to get valid wilayah codes
+    public static function getValidWilayahCodes()
+    {
+        return array_keys(self::getWilayahOptions());
+    }
 
     // Relationships can be added here if needed
     // For example, if you have a Wilayah model:
